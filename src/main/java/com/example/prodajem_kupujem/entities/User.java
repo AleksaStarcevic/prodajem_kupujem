@@ -24,6 +24,8 @@ public class User {
 
     private String phone;
 
+    private double credit;
+
 
     @ManyToOne
     @JoinColumn(name = "role_id")
