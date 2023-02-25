@@ -1,6 +1,6 @@
 package com.example.prodajem_kupujem.entities;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,7 +28,7 @@ public class Rating {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private AppUser appUser;
 
     @ManyToOne
     @JoinColumn(name = "advertisement_id")
