@@ -22,14 +22,14 @@ import java.util.List;
 import java.util.Map;
 
 import static com.example.prodajem_kupujem.config.Constants.SECRET;
-import static java.util.Arrays.stream;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        if(!request.getServletPath().equals("/login")) {
+        List<String> routesAllowed= List.of("/login","/refreshToken");
+        if(!routesAllowed.contains(request.getServletPath())) {
             String authorizationHeader = request.getHeader(AUTHORIZATION);
             if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
                 try {
