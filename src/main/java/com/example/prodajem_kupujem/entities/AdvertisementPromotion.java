@@ -2,6 +2,7 @@ package com.example.prodajem_kupujem.entities;
 
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -14,6 +15,7 @@ import javax.persistence.Id;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Builder
 public class AdvertisementPromotion {
 
     @Id

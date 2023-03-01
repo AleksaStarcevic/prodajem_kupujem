@@ -42,7 +42,6 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                     Collection<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role.substring(2,role.length()-2)));
                     UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(username, null, authorities);
                     SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-                    filterChain.doFilter(request, response);
                 } catch (Exception e) {
                     Map<String, String> error = new HashMap<>();
                     error.put("error_message", e.getMessage());

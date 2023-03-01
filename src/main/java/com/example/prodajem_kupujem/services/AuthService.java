@@ -4,7 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.example.prodajem_kupujem.dto.RefreshTokenDTO;
+import com.example.prodajem_kupujem.dto.tokens.RefreshTokenDTO;
 import com.example.prodajem_kupujem.entities.AppUser;
 import com.example.prodajem_kupujem.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;

@@ -1,7 +1,6 @@
 package com.example.prodajem_kupujem.entities;
 
 
-import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,6 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import javax.persistence.*;
 import java.util.Collection;
 import java.util.List;
 
@@ -20,6 +20,9 @@ import java.util.List;
 public class AppUser implements UserDetails {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+    @Column(unique = true)
     private String email;
 
     private String password;
@@ -32,11 +35,9 @@ public class AppUser implements UserDetails {
 
     private double credit;
 
-
     @ManyToOne
     @JoinColumn(name = "role_id")
     private UserRole role;
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.getRoleName()));
