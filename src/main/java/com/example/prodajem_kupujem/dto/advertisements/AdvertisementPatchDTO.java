@@ -1,17 +1,20 @@
 package com.example.prodajem_kupujem.dto.advertisements;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.*;
-import java.util.Date;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.Size;
+
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class AdvertisementAddDTO {
+@NoArgsConstructor
+public class AdvertisementPatchDTO {
 
     @NotEmpty(message = "Title cannot be null or empty")
     @Size(min = 3,max = 30,message = "Title must be between 3 and 30 characters")
@@ -21,32 +24,25 @@ public class AdvertisementAddDTO {
     @Size(min = 3,max = 100,message = "Title must be between 3 and 100 characters")
     private String description;
 
-    @NotEmpty(message = "Picture cannot be null or empty")
+
     private String picture;
 
-    @NotNull(message = "Price cannot be null or empty")
+
     @Positive(message = "Price must have a positive value")
     @Min(value = 100,message = "Minimal price is 100")
     private double price;
 
-    @NotNull(message = "Date cannot be null")
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    @PastOrPresent
-    private Date creationDate;
 
-    @NotEmpty(message = "Email cannot be null or empty")
-    @Email(message = "Email should be valid")
-    private String userEmail;
 
-    @NotNull(message = "Category cannot be null or empty")
     @Positive(message = "Category must have a positive value")
     private int advertisementCategory;
 
 
-    @NotNull(message = "Status cannot be null or empty")
+
     @Positive(message = "Status must have a positive value")
     private int advertisementStatus;
 
 
+    @Positive(message = "Promotion must have a positive value")
     private int advertisementPromotion;
 }

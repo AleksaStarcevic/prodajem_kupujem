@@ -15,4 +15,9 @@ public class ControllerExceptionHandler {
         return ResponseEntity.badRequest().body(exception.getBindingResult().getFieldErrors().get(0).getDefaultMessage());
     }
 
+    @ExceptionHandler(AdvertisementNotFoundException.class)
+    public ResponseEntity<String> handleAdvertisementNotFoundException(AdvertisementNotFoundException exception) {
+        return ResponseEntity.badRequest().body(exception.getMessage());
+    }
+
 }

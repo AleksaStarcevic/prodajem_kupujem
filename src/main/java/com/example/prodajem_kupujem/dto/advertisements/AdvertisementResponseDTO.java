@@ -1,9 +1,12 @@
 package com.example.prodajem_kupujem.dto.advertisements;
 
+import com.example.prodajem_kupujem.entities.AppUser;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.Date;
 
 
 @Data
@@ -20,7 +23,9 @@ public class AdvertisementResponseDTO {
 
     private double price;
 
-    private String userEmail;
+    private Date creationDate;
+
+    private AppUser user;
 
     private String advertisementCategory;
 

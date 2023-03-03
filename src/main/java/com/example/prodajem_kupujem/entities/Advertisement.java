@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Data
 @NoArgsConstructor
@@ -26,6 +27,9 @@ public class Advertisement {
     private byte[] picture;
 
     private double price;
+
+    @Temporal(TemporalType.DATE)
+    private Date creationDate;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

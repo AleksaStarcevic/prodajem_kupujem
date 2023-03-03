@@ -8,7 +8,9 @@ public class Constants {
 
     public static  final int REFRESH_TOKEN_EXPIRATION=180000000;
 
-    public static  final int ADVERTISEMENT_STATUS_ACTIVE=1;
+
+    public static  final String ADVERTISEMENT_STATUS_ACTIVE="ACTIVE";
+    public static  final String ADVERTISEMENT_STATUS_EXPIRES="EXPIRES";
 
 
 }

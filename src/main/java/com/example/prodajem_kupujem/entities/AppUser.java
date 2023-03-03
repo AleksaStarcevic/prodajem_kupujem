@@ -72,4 +72,11 @@ public class AppUser implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    public AppUser(String email, String name, String city, String phone) {
+        this.email = email;
+        this.name = name;
+        this.city = city;
+        this.phone = phone;
+    }
 }
