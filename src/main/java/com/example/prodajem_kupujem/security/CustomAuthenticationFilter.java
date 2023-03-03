@@ -2,9 +2,6 @@ package com.example.prodajem_kupujem.security;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.example.prodajem_kupujem.entities.AppUser;
-
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -14,7 +11,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -45,7 +41,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
 
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-        AppUser user = (AppUser) authResult.getPrincipal();
+       UserDetailsImpl user = (UserDetailsImpl) authResult.getPrincipal();
         Algorithm algorithm = Algorithm.HMAC256(SECRET.getBytes());
 
         String accessToken = JWT.create()

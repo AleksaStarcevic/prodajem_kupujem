@@ -7,6 +7,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.prodajem_kupujem.dto.tokens.RefreshTokenDTO;
 import com.example.prodajem_kupujem.entities.AppUser;
 import com.example.prodajem_kupujem.repositories.UserRepository;
+import com.example.prodajem_kupujem.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
@@ -40,7 +41,8 @@ public class AuthService {
             if (!userOptional.isPresent()) {
                 throw new Exception("Unknown user in token");
             }
-            AppUser user = userOptional.get();
+            AppUser appUser = userOptional.get();
+            UserDetailsImpl user = new UserDetailsImpl(appUser);
 
             String accessToken = JWT.create()
                     .withSubject(user.getUsername())
