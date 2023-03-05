@@ -1,12 +1,12 @@
 package com.example.prodajem_kupujem.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -46,5 +46,31 @@ public class Advertisement {
     @ManyToOne
     @JoinColumn(name = "promotion_id")
     private AdvertisementPromotion advertisementPromotion;
+
+    @EqualsAndHashCode.Exclude
+    @ManyToMany
+    @JoinTable(name = "followings",
+            joinColumns = {@JoinColumn(name = "advertisement_id")},
+            inverseJoinColumns = {@JoinColumn(name = "user_id")})
+    private  Set<AppUser> followers = new HashSet<>();
+
+    public void addFollowers(AppUser user){
+        this.followers.add(user);
+        user.getFollowing().add(this);
+    }
+
+    public void removeFollower(int userId){
+     Optional<AppUser> opt =  followers.stream()
+                                .filter(u -> u.getId() == userId)
+                                .findFirst();
+     if(opt.isPresent()){
+         AppUser user = opt.get();
+         this.followers.remove(user);
+         user.getFollowing().remove(this);
+     }
+    }
+
+
+
 
 }

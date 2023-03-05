@@ -26,8 +26,9 @@ public interface AdvertisementRepository extends JpaRepository<Advertisement,Int
 
 
     List<Advertisement> findAdvertisementsByAdvertisementStatus_StatusNameOrAdvertisementStatus_StatusName(String status1,String status2);
-
     Optional<Advertisement> findById(int id);
+    @Query("SELECT a from Advertisement a where a.id = :id and a.advertisementStatus.statusName <> :status")
+    Optional<Advertisement> findByIdAndStatus(int id,String status);
 
     @Transactional
     @Modifying

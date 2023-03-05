@@ -12,5 +12,7 @@ public class Constants {
     public static  final String ADVERTISEMENT_STATUS_ACTIVE="ACTIVE";
     public static  final String ADVERTISEMENT_STATUS_EXPIRES="EXPIRES";
 
+    public static  final String ADVERTISEMENT_STATUS_EXPIRED="EXPIRED";
+
 
 }

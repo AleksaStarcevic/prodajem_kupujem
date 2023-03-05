@@ -4,11 +4,13 @@ import com.example.prodajem_kupujem.dto.advertisements.AdvertisementAddDTO;
 import com.example.prodajem_kupujem.dto.advertisements.AdvertisementPatchDTO;
 import com.example.prodajem_kupujem.dto.advertisements.AdvertisementResponseDTO;
 import com.example.prodajem_kupujem.exceptions.AdvertisementNotFoundException;
+import com.example.prodajem_kupujem.exceptions.UserNotFoundException;
 import com.example.prodajem_kupujem.services.AdvertisementService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -47,5 +49,15 @@ public class AdvertisementController {
     @PatchMapping("/{id}")
     public void patchAdvertisement(@PathVariable int id, @RequestBody @Valid AdvertisementPatchDTO dto) throws AdvertisementNotFoundException {
         advertisementService.advertisementPatch(id,dto);
+    }
+
+    @PatchMapping("/{id}/follow")
+    public void followAdvertisement(@PathVariable int id, Authentication authentication) throws UserNotFoundException, AdvertisementNotFoundException {
+        advertisementService.followAdvertisement(id,authentication.getName());
+    }
+
+    @PatchMapping("/{id}/unfollow")
+    public void unfollowAdvertisement(@PathVariable int id, Authentication authentication) throws UserNotFoundException, AdvertisementNotFoundException {
+        advertisementService.unfollowAdvertisement(id,authentication.getName());
     }
 }

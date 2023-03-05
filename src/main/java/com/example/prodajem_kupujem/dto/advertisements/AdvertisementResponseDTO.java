@@ -1,6 +1,6 @@
 package com.example.prodajem_kupujem.dto.advertisements;
 
-import com.example.prodajem_kupujem.entities.AppUser;
+import com.example.prodajem_kupujem.dto.users.UserResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,7 +25,7 @@ public class AdvertisementResponseDTO {
 
     private Date creationDate;
 
-    private AppUser user;
+    private UserResponseDTO user;
 
     private String advertisementCategory;
 

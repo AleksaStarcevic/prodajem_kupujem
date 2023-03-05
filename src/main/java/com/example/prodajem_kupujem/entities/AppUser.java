@@ -1,11 +1,12 @@
 package com.example.prodajem_kupujem.entities;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -35,10 +36,10 @@ public class AppUser {
     private UserRole role;
 
 
-    public AppUser(String email, String name, String city, String phone) {
-        this.email = email;
-        this.name = name;
-        this.city = city;
-        this.phone = phone;
-    }
+    @JsonIgnore
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @ManyToMany(fetch = FetchType.EAGER,mappedBy = "followers")
+    private  Set<Advertisement> following = new HashSet<>();
+
 }

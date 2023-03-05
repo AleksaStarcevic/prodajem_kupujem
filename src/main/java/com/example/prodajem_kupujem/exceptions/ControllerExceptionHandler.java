@@ -20,4 +20,9 @@ public class ControllerExceptionHandler {
         return ResponseEntity.badRequest().body(exception.getMessage());
     }
 
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException exception) {
+        return ResponseEntity.badRequest().body(exception.getMessage());
+    }
+
 }

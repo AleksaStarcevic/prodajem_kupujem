@@ -3,8 +3,10 @@ package com.example.prodajem_kupujem.services;
 import com.example.prodajem_kupujem.dto.advertisements.AdvertisementAddDTO;
 import com.example.prodajem_kupujem.dto.advertisements.AdvertisementPatchDTO;
 import com.example.prodajem_kupujem.dto.advertisements.AdvertisementResponseDTO;
+import com.example.prodajem_kupujem.dto.users.UserResponseDTO;
 import com.example.prodajem_kupujem.entities.*;
 import com.example.prodajem_kupujem.exceptions.AdvertisementNotFoundException;
+import com.example.prodajem_kupujem.exceptions.UserNotFoundException;
 import com.example.prodajem_kupujem.repositories.AdvertisementRepository;
 import com.example.prodajem_kupujem.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,10 +14,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.example.prodajem_kupujem.config.Constants.ADVERTISEMENT_STATUS_ACTIVE;
-import static com.example.prodajem_kupujem.config.Constants.ADVERTISEMENT_STATUS_EXPIRES;
+import static com.example.prodajem_kupujem.config.Constants.*;
 
 @Service
 @RequiredArgsConstructor
@@ -51,7 +53,12 @@ public class AdvertisementService {
                                                                     .picture(ad.getPicture())
                                                                     .price(ad.getPrice())
                                                                     .creationDate(ad.getCreationDate())
-                                                                    .user(new AppUser(ad.getAppUser().getEmail(), ad.getAppUser().getName(),ad.getAppUser().getCity(),ad.getAppUser().getPhone()))
+                                                                    .user(UserResponseDTO.builder()
+                                                                            .email(ad.getAppUser().getEmail())
+                                                                            .name(ad.getAppUser().getName())
+                                                                            .city(ad.getAppUser().getCity())
+                                                                            .phone(ad.getAppUser().getPhone())
+                                                                            .build())
                                                                     .advertisementCategory(ad.getAdvertisementCategory().getCategoryName())
                                                                     .advertisementStatus(ad.getAdvertisementStatus().getStatusName())
                                                                     .advertisementPromotion(ad.getAdvertisementPromotion().getTitle())
@@ -81,5 +88,33 @@ public class AdvertisementService {
     public void advertisementPatch(int id,AdvertisementPatchDTO dto) throws AdvertisementNotFoundException {
        advertisementRepository.findById(id).orElseThrow(()-> new AdvertisementNotFoundException("No advertisement with given id"));
         advertisementRepository.patchAdvertisement(id,dto.getTitle(),dto.getDescription(),dto.getPicture(),dto.getPrice(),dto.getAdvertisementCategory(),dto.getAdvertisementPromotion(),dto.getAdvertisementStatus());
+    }
+
+    public void followAdvertisement(int id, String userEmail) throws UserNotFoundException, AdvertisementNotFoundException {
+
+        Optional<AppUser> optUser = userRepository.findByEmail(userEmail);
+        Optional<Advertisement> optAd = advertisementRepository.findByIdAndStatus(id,ADVERTISEMENT_STATUS_EXPIRED);
+
+        if(optUser.isEmpty()) throw new UserNotFoundException("No user with given email");
+        if(optAd.isEmpty()) throw new AdvertisementNotFoundException("Cant follow expired advertisement");
+
+        AppUser appUser = optUser.get();
+        Advertisement ad = optAd.get();
+        ad.addFollowers(appUser);
+        advertisementRepository.save(ad);
+    }
+
+    public void unfollowAdvertisement(int id, String email) throws UserNotFoundException, AdvertisementNotFoundException {
+        Optional<AppUser> optUser = userRepository.findByEmail(email);
+        Optional<Advertisement> optAd = advertisementRepository.findById(id);
+
+        if(optUser.isEmpty()) throw new UserNotFoundException("No user with given email");
+        if(optAd.isEmpty()) throw new AdvertisementNotFoundException("Bad advertisement id");
+
+        AppUser appUser = optUser.get();
+        Advertisement ad = optAd.get();
+        ad.removeFollower(appUser.getId());
+        advertisementRepository.save(ad);
+
     }
 }
