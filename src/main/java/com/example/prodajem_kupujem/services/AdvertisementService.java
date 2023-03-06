@@ -3,7 +3,7 @@ package com.example.prodajem_kupujem.services;
 import com.example.prodajem_kupujem.dto.advertisements.AdvertisementAddDTO;
 import com.example.prodajem_kupujem.dto.advertisements.AdvertisementPatchDTO;
 import com.example.prodajem_kupujem.dto.advertisements.AdvertisementResponseDTO;
-import com.example.prodajem_kupujem.dto.users.UserResponseDTO;
+import com.example.prodajem_kupujem.dto.mappers.AdvertisementResponseMapper;
 import com.example.prodajem_kupujem.entities.*;
 import com.example.prodajem_kupujem.exceptions.AdvertisementNotFoundException;
 import com.example.prodajem_kupujem.exceptions.UserNotFoundException;
@@ -26,6 +26,8 @@ public class AdvertisementService {
     private final AdvertisementRepository advertisementRepository;
     private final UserRepository userRepository;
 
+    private final AdvertisementResponseMapper advertisementResponseMapper;
+
 
     public Advertisement addAdvertisement(AdvertisementAddDTO dto){
         String base64 = dto.getPicture();
@@ -47,23 +49,9 @@ public class AdvertisementService {
     }
 
     public List<AdvertisementResponseDTO> getAllAdvertisements(String category) {
-        return  advertisementRepository.findAdvertisementsByAdvertisementCategory_CategoryName(category).stream().map(ad ->
-                                                            AdvertisementResponseDTO.builder().title(ad.getTitle())
-                                                                    .description(ad.getDescription())
-                                                                    .picture(ad.getPicture())
-                                                                    .price(ad.getPrice())
-                                                                    .creationDate(ad.getCreationDate())
-                                                                    .user(UserResponseDTO.builder()
-                                                                            .email(ad.getAppUser().getEmail())
-                                                                            .name(ad.getAppUser().getName())
-                                                                            .city(ad.getAppUser().getCity())
-                                                                            .phone(ad.getAppUser().getPhone())
-                                                                            .build())
-                                                                    .advertisementCategory(ad.getAdvertisementCategory().getCategoryName())
-                                                                    .advertisementStatus(ad.getAdvertisementStatus().getStatusName())
-                                                                    .advertisementPromotion(ad.getAdvertisementPromotion().getTitle())
-                                                                    .build()
-                                                            ).collect(Collectors.toList());
+        return  advertisementRepository.findAdvertisementsByAdvertisementCategory_CategoryName(category).stream()
+                .map(ad -> advertisementResponseMapper.apply(ad))
+                .collect(Collectors.toList());
     }
 
     public byte[] getAdPic(int id) {
@@ -116,5 +104,32 @@ public class AdvertisementService {
         ad.removeFollower(appUser.getId());
         advertisementRepository.save(ad);
 
+    }
+
+    public long getAdFollowers(int id) throws AdvertisementNotFoundException {
+        Optional<Advertisement> optAd = advertisementRepository.findById(id);
+        if(optAd.isEmpty()) throw new AdvertisementNotFoundException("Bad advertisement id");
+        Advertisement ad = optAd.get();
+        long followers = ad.getFollowers().stream().count();
+        return followers;
+    }
+
+    public List<Advertisement> searchAdvertisements(String keywords) {
+     return advertisementRepository.findAdvertisementsByTitleContaining(keywords);
+    }
+
+    public List<AdvertisementResponseDTO> sortAdvertisementsByPriceDesc(String categoryName) {
+        List<Advertisement> advertisements = advertisementRepository.getAllAdsByCategorySortPriceDesc(categoryName);
+        return advertisements.stream().map(advertisementResponseMapper::apply).collect(Collectors.toList());
+    }
+
+    public List<AdvertisementResponseDTO> sortAdvertisementsByPriceAsc(String category) {
+        List<Advertisement> advertisements = advertisementRepository.findAdvertisementsByAdvertisementCategory_CategoryNameOrderByPriceAsc(category);
+        return advertisements.stream().map(advertisementResponseMapper::apply).collect(Collectors.toList());
+    }
+
+    public List<AdvertisementResponseDTO> sortAdvertisementsByNewest(String category) {
+        List<Advertisement> advertisements = advertisementRepository.findAdvertisementsByAdvertisementCategory_CategoryNameOrderByCreationDateDesc(category);
+        return advertisements.stream().map(advertisementResponseMapper::apply).collect(Collectors.toList());
     }
 }

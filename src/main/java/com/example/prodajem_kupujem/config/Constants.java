@@ -14,5 +14,9 @@ public class Constants {
 
     public static  final String ADVERTISEMENT_STATUS_EXPIRED="EXPIRED";
 
+    public static  final String ADVERTISEMENT_SORT_PRICE_ASCENDING="price_asc";
+    public static  final String ADVERTISEMENT_SORT_PRICE_DESCENDING="price_desc";
+    public static  final String ADVERTISEMENT_SORT_DATE_NEWEST="created_desc";
+
 
 }
