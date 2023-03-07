@@ -25,4 +25,14 @@ public class ControllerExceptionHandler {
         return ResponseEntity.badRequest().body(exception.getMessage());
     }
 
+    @ExceptionHandler(AdvertisementPromotionNotFoundException.class)
+    public ResponseEntity<String> handleAdvertisementPromotionNotFoundException(AdvertisementPromotionNotFoundException exception) {
+        return ResponseEntity.badRequest().body(exception.getMessage());
+    }
+
+    @ExceptionHandler(UserNotEnoughCreditException.class)
+    public ResponseEntity<String> handleUserNotEnoughCreditException(UserNotEnoughCreditException exception) {
+        return ResponseEntity.badRequest().body(exception.getMessage());
+    }
+
 }

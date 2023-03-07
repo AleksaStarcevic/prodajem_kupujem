@@ -42,8 +42,11 @@ public interface AdvertisementRepository extends JpaRepository<Advertisement,Int
             "a.advertisementPromotion.id = :advertisementPromotion " +
             "WHERE a.id = :id")
     void patchAdvertisement(@Param("id")int id, @Param("title")String title,@Param("description") String description,@Param("picture") String picture,@Param("price") double price,@Param("advertisementCategory") int advertisementCategory, @Param("advertisementPromotion")int advertisementPromotion,@Param("advertisementStatus") int advertisementStatus);
-
-    List<Advertisement> findAdvertisementsByAdvertisementCategory_CategoryName(String categoryName);
+    @Query("select a " +
+            "from Advertisement a join AdvertisementCategory ac on a.advertisementCategory.id = ac.id " +
+            "where ac.categoryName = :categoryName " +
+            "order by a.advertisementPromotion.id desc")
+    List<Advertisement> findAdvertisementsFromCategoryAndOrderByPromotion(String categoryName);
 
     List<Advertisement> findAdvertisementsByTitleContaining(String keywords);
 
@@ -56,5 +59,7 @@ public interface AdvertisementRepository extends JpaRepository<Advertisement,Int
     List<Advertisement> findAdvertisementsByAdvertisementCategory_CategoryNameOrderByPriceAsc(String categoryName);
 
     List<Advertisement> findAdvertisementsByAdvertisementCategory_CategoryNameOrderByCreationDateDesc(String categoryName);
+
+    Optional<Advertisement> findByIdAndAppUser_Id(int adId,int userId);
 
 }

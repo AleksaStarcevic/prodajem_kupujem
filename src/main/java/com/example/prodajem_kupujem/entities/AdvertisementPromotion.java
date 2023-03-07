@@ -26,7 +26,9 @@ public class AdvertisementPromotion {
 
     private double price;
 
+    private int duration;
+
     @Temporal(TemporalType.DATE)
-    private Date duration;
+    private Date expirationDate;
 
 }

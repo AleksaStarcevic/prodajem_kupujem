@@ -49,7 +49,7 @@ public class AdvertisementService {
     }
 
     public List<AdvertisementResponseDTO> getAllAdvertisements(String category) {
-        return  advertisementRepository.findAdvertisementsByAdvertisementCategory_CategoryName(category).stream()
+        return  advertisementRepository.findAdvertisementsFromCategoryAndOrderByPromotion(category).stream()
                 .map(ad -> advertisementResponseMapper.apply(ad))
                 .collect(Collectors.toList());
     }

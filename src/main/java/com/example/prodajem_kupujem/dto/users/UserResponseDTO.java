@@ -11,4 +11,5 @@ public class UserResponseDTO {
     String phone;
     String email;
     String city;
+    double credit;
 }

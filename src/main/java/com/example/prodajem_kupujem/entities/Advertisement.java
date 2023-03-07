@@ -44,7 +44,7 @@ public class Advertisement {
     private AdvertisementStatus advertisementStatus;
 
     @ManyToOne
-    @JoinColumn(name = "promotion_id")
+    @JoinColumn(name = "promotion_id",columnDefinition = "int default 0")
     private AdvertisementPromotion advertisementPromotion;
 
     @EqualsAndHashCode.Exclude

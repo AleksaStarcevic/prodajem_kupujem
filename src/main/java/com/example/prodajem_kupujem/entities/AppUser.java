@@ -29,6 +29,7 @@ public class AppUser {
 
     private String phone;
 
+    @Column(columnDefinition = "double default 0.0")
     private double credit;
 
     @ManyToOne
