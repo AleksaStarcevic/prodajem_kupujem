@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Base64;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -38,12 +39,16 @@ public class AdvertisementService {
                 .description(dto.getDescription())
                 .picture(pic)
                 .price(dto.getPrice())
-                .creationDate(dto.getCreationDate())
+                .creationDate(new Date())
                 .appUser(userRepository.findByEmail(dto.getUserEmail()).get())
                 .advertisementCategory(AdvertisementCategory.builder().id(dto.getAdvertisementCategory()).build())
-                .advertisementStatus(AdvertisementStatus.builder().id(dto.getAdvertisementStatus()).build())
+                .advertisementStatus(AdvertisementStatus.builder().id(ADVERTISEMENT_STATUS_ACTIVE_).build())
                 .advertisementPromotion(AdvertisementPromotion.builder().id(dto.getAdvertisementPromotion()).build())
                 .build();
+
+        if(dto.getAdvertisementPromotion() != 0){
+            // activate promotion
+        }
 
       return advertisementRepository.save(ad);
     }
@@ -60,7 +65,6 @@ public class AdvertisementService {
     }
 
     public List<Advertisement> getAdsByStatus(String status) {
-        advertisementRepository.updateStatuses();
         List<Advertisement> ads;
 
         if(status.equals(ADVERTISEMENT_STATUS_ACTIVE)){

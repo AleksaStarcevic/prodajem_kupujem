@@ -35,6 +35,7 @@ public class AdvertisementController {
 
     @GetMapping("/category/{category}")
     public List<AdvertisementResponseDTO> getAllAdvertisementsFromCategory(@PathVariable String category) {
+        // stavi da vraca samo aktivne
       return advertisementService.getAllAdvertisements(category);
     }
 

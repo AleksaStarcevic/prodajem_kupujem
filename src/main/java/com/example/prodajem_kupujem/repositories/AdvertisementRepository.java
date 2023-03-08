@@ -18,7 +18,7 @@ public interface AdvertisementRepository extends JpaRepository<Advertisement,Int
             "WHEN datediff(curdate(),a.creation_date) > 30 THEN 2 " +
             "ELSE 1 " +
             "END) " +
-            "WHERE a.status_id = 1 OR a.status_id=3;",nativeQuery = true)
+            "WHERE a.status_id IN (1,3);",nativeQuery = true)
     void updateStatuses();
 
 
@@ -45,7 +45,7 @@ public interface AdvertisementRepository extends JpaRepository<Advertisement,Int
     @Query("select a " +
             "from Advertisement a join AdvertisementCategory ac on a.advertisementCategory.id = ac.id " +
             "where ac.categoryName = :categoryName " +
-            "order by a.advertisementPromotion.id desc")
+            "order by a.advertisementPromotion.id desc,a.creationDate desc")
     List<Advertisement> findAdvertisementsFromCategoryAndOrderByPromotion(String categoryName);
 
     List<Advertisement> findAdvertisementsByTitleContaining(String keywords);
@@ -61,5 +61,12 @@ public interface AdvertisementRepository extends JpaRepository<Advertisement,Int
     List<Advertisement> findAdvertisementsByAdvertisementCategory_CategoryNameOrderByCreationDateDesc(String categoryName);
 
     Optional<Advertisement> findByIdAndAppUser_Id(int adId,int userId);
+
+    @Transactional
+    @Modifying
+    @Query(value = "update Advertisement a " +
+            "set a.promotionExpiration=null, a.advertisementPromotion.id = 1 " +
+            "where CURRENT_DATE > a.promotionExpiration")
+    void updateAdvertisementsPromotions();
 
 }

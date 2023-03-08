@@ -1,12 +1,10 @@
 package com.example.prodajem_kupujem.dto.advertisements;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.*;
-import java.util.Date;
 
 @Data
 @NoArgsConstructor
@@ -29,10 +27,6 @@ public class AdvertisementAddDTO {
     @Min(value = 100,message = "Minimal price is 100")
     private double price;
 
-    @NotNull(message = "Date cannot be null")
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    @PastOrPresent
-    private Date creationDate;
 
     @NotEmpty(message = "Email cannot be null or empty")
     @Email(message = "Email should be valid")
@@ -41,11 +35,6 @@ public class AdvertisementAddDTO {
     @NotNull(message = "Category cannot be null or empty")
     @Positive(message = "Category must have a positive value")
     private int advertisementCategory;
-
-
-    @NotNull(message = "Status cannot be null or empty")
-    @Positive(message = "Status must have a positive value")
-    private int advertisementStatus;
 
 
     private int advertisementPromotion;

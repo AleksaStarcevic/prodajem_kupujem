@@ -47,6 +47,9 @@ public class Advertisement {
     @JoinColumn(name = "promotion_id",columnDefinition = "int default 0")
     private AdvertisementPromotion advertisementPromotion;
 
+    @Temporal(TemporalType.DATE)
+    private Date promotionExpiration;
+
     @EqualsAndHashCode.Exclude
     @ManyToMany
     @JoinTable(name = "followings",

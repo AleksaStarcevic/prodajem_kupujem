@@ -17,7 +17,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.Optional;
+
+import static com.example.prodajem_kupujem.config.Constants.ADVERTISEMENT_PROMOTION_RESTORE;
+import static com.example.prodajem_kupujem.config.Constants.ADVERTISEMENT_PROMOTION_STANDARD;
 
 @Service
 @RequiredArgsConstructor
@@ -60,9 +64,17 @@ public class UserService {
         if(userCredit < promotionPrice) throw new UserNotEnoughCreditException("Not enough credit to activate this promotion");
 
         user.setCredit(userCredit - promotionPrice);
-        promotion.setExpirationDate(java.sql.Date.valueOf(LocalDate.now().plusDays(promotion.getDuration())));
-        advertisement.setAdvertisementPromotion(AdvertisementPromotion.builder().id(promotionID).build());
+
+        if(promotionID == ADVERTISEMENT_PROMOTION_RESTORE){
+            advertisement.setCreationDate(new Date());
+            advertisement.setPromotionExpiration(null);
+            advertisement.setAdvertisementPromotion(AdvertisementPromotion.builder().id(ADVERTISEMENT_PROMOTION_STANDARD).build());
+        }else{
+            advertisement.setPromotionExpiration(java.sql.Date.valueOf(LocalDate.now().plusDays(promotion.getDuration())));
+            advertisement.setAdvertisementPromotion(AdvertisementPromotion.builder().id(promotionID).build());
+        }
         advertisementRepository.save(advertisement);
+
 
     }
 
