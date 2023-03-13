@@ -16,7 +16,7 @@ public class SchedulingService {
         advertisementRepository.updateStatuses();
     }
 
-    @Scheduled(cron = "0 0/1 * * * *")
+    @Scheduled(cron = "@daily")
     public void updateAdvertisementsPromotions(){
         advertisementRepository.updateAdvertisementsPromotions();
     }

@@ -22,7 +22,6 @@ public class AdvertisementAddDTO {
     @NotEmpty(message = "Picture cannot be null or empty")
     private String picture;
 
-    @NotNull(message = "Price cannot be null or empty")
     @Positive(message = "Price must have a positive value")
     @Min(value = 100,message = "Minimal price is 100")
     private double price;
@@ -32,10 +31,9 @@ public class AdvertisementAddDTO {
     @Email(message = "Email should be valid")
     private String userEmail;
 
-    @NotNull(message = "Category cannot be null or empty")
     @Positive(message = "Category must have a positive value")
     private int advertisementCategory;
 
-
+    @Positive(message = "Promotion must have a positive value")
     private int advertisementPromotion;
 }

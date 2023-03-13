@@ -6,16 +6,20 @@ import com.example.prodajem_kupujem.dto.advertisements.AdvertisementResponseDTO;
 import com.example.prodajem_kupujem.dto.mappers.AdvertisementResponseMapper;
 import com.example.prodajem_kupujem.entities.*;
 import com.example.prodajem_kupujem.exceptions.AdvertisementNotFoundException;
+import com.example.prodajem_kupujem.exceptions.AdvertisementPromotionNotFoundException;
+import com.example.prodajem_kupujem.exceptions.UserNotEnoughCreditException;
 import com.example.prodajem_kupujem.exceptions.UserNotFoundException;
 import com.example.prodajem_kupujem.repositories.AdvertisementRepository;
 import com.example.prodajem_kupujem.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.Base64;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.example.prodajem_kupujem.config.Constants.*;
@@ -26,11 +30,12 @@ public class AdvertisementService {
 
     private final AdvertisementRepository advertisementRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
 
     private final AdvertisementResponseMapper advertisementResponseMapper;
 
 
-    public Advertisement addAdvertisement(AdvertisementAddDTO dto){
+    public Advertisement addAdvertisement(AdvertisementAddDTO dto,String email) throws UserNotFoundException, UserNotEnoughCreditException, AdvertisementNotFoundException, AdvertisementPromotionNotFoundException {
         String base64 = dto.getPicture();
         byte[] pic = Base64.getDecoder().decode(base64);
 
@@ -46,15 +51,16 @@ public class AdvertisementService {
                 .advertisementPromotion(AdvertisementPromotion.builder().id(dto.getAdvertisementPromotion()).build())
                 .build();
 
-        if(dto.getAdvertisementPromotion() != 0){
-            // activate promotion
+        Advertisement advertisement =  advertisementRepository.save(ad);
+        if(advertisement.getAdvertisementPromotion().getId() != ADVERTISEMENT_PROMOTION_STANDARD){
+            userService.activatePromotion(dto.getAdvertisementPromotion(),advertisement.getId(),email);
         }
-
-      return advertisementRepository.save(ad);
+        return advertisement;
     }
 
-    public List<AdvertisementResponseDTO> getAllAdvertisements(String category) {
-        return  advertisementRepository.findAdvertisementsFromCategoryAndOrderByPromotion(category).stream()
+    public List<AdvertisementResponseDTO> getAllAdvertisements(String category,int page) {
+        List<Advertisement> advertisementList = advertisementRepository.findAdvertisementsFromCategoryAndOrderByPromotion(category, PageRequest.of(page-1,PAGE_SIZE)).getContent();
+        return   advertisementList.stream()
                 .map(ad -> advertisementResponseMapper.apply(ad))
                 .collect(Collectors.toList());
     }
@@ -122,18 +128,27 @@ public class AdvertisementService {
      return advertisementRepository.findAdvertisementsByTitleContaining(keywords);
     }
 
-    public List<AdvertisementResponseDTO> sortAdvertisementsByPriceDesc(String categoryName) {
-        List<Advertisement> advertisements = advertisementRepository.getAllAdsByCategorySortPriceDesc(categoryName);
+    public List<AdvertisementResponseDTO> sortAdvertisements(String category, String[] sort, int page) {
+        List<Sort.Order> orders = new ArrayList<>();
+        if(sort[0].contains(",")){
+            for (String s : sort) {
+                String[] fields = s.split(",");
+                orders.add(new Sort.Order(getSortOrder(fields[1]),fields[0]));
+            }
+        }else{
+            orders.add(new Sort.Order(getSortOrder(sort[1]),sort[0]));
+        }
+
+        Pageable pageable = PageRequest.of(page-1,PAGE_SIZE,Sort.by(orders));
+        Date dateOfActiveAd = Date.from(LocalDate.now().minusDays(30).atStartOfDay(ZoneId.systemDefault()).toInstant());
+        List<Advertisement> advertisements = advertisementRepository.findAdvertisementsByAdvertisementCategory_CategoryName(category,dateOfActiveAd ,pageable).getContent();
         return advertisements.stream().map(advertisementResponseMapper::apply).collect(Collectors.toList());
     }
 
-    public List<AdvertisementResponseDTO> sortAdvertisementsByPriceAsc(String category) {
-        List<Advertisement> advertisements = advertisementRepository.findAdvertisementsByAdvertisementCategory_CategoryNameOrderByPriceAsc(category);
-        return advertisements.stream().map(advertisementResponseMapper::apply).collect(Collectors.toList());
-    }
-
-    public List<AdvertisementResponseDTO> sortAdvertisementsByNewest(String category) {
-        List<Advertisement> advertisements = advertisementRepository.findAdvertisementsByAdvertisementCategory_CategoryNameOrderByCreationDateDesc(category);
-        return advertisements.stream().map(advertisementResponseMapper::apply).collect(Collectors.toList());
+    private Sort.Direction getSortOrder(String direction) {
+        if(direction.equals("desc")) {
+            return Sort.Direction.DESC;
+        }
+        return Sort.Direction.ASC;
     }
 }

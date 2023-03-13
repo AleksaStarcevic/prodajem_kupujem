@@ -1,12 +1,15 @@
 package com.example.prodajem_kupujem.repositories;
 
 import com.example.prodajem_kupujem.entities.Advertisement;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,19 +49,14 @@ public interface AdvertisementRepository extends JpaRepository<Advertisement,Int
             "from Advertisement a join AdvertisementCategory ac on a.advertisementCategory.id = ac.id " +
             "where ac.categoryName = :categoryName " +
             "order by a.advertisementPromotion.id desc,a.creationDate desc")
-    List<Advertisement> findAdvertisementsFromCategoryAndOrderByPromotion(String categoryName);
+    Page<Advertisement> findAdvertisementsFromCategoryAndOrderByPromotion(String categoryName, Pageable pageable);
 
     List<Advertisement> findAdvertisementsByTitleContaining(String keywords);
 
     @Query("select a " +
             "from Advertisement a join AdvertisementCategory ac on a.advertisementCategory.id = ac.id " +
-            "where ac.categoryName = :categoryName " +
-            "order by a.price desc")
-    List<Advertisement> getAllAdsByCategorySortPriceDesc(String categoryName);
-
-    List<Advertisement> findAdvertisementsByAdvertisementCategory_CategoryNameOrderByPriceAsc(String categoryName);
-
-    List<Advertisement> findAdvertisementsByAdvertisementCategory_CategoryNameOrderByCreationDateDesc(String categoryName);
+            "where ac.categoryName = :categoryName and a.creationDate >= :dateOfActiveAd")
+    Page<Advertisement> findAdvertisementsByAdvertisementCategory_CategoryName(String categoryName, Date dateOfActiveAd, Pageable pageable);
 
     Optional<Advertisement> findByIdAndAppUser_Id(int adId,int userId);
 

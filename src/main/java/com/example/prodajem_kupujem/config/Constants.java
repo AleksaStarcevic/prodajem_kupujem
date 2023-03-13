@@ -17,13 +17,16 @@ public class Constants {
 
     public static  final String ADVERTISEMENT_STATUS_EXPIRED="EXPIRED";
 
-    public static  final String ADVERTISEMENT_SORT_PRICE_ASCENDING="price_asc";
-    public static  final String ADVERTISEMENT_SORT_PRICE_DESCENDING="price_desc";
-    public static  final String ADVERTISEMENT_SORT_DATE_NEWEST="created_desc";
+    public static  final String ADVERTISEMENT_SORT_DATE_NEWEST="creationDate,desc";
+    public static  final String ADVERTISEMENT_SORT_PROMOTION="advertisementPromotion,desc";
 
     public static  final int ADVERTISEMENT_PROMOTION_RESTORE=2;
 
     public static  final int ADVERTISEMENT_PROMOTION_STANDARD=1;
+    public static  final int PAGE_SIZE=5;
+
+
+
 
 
 }

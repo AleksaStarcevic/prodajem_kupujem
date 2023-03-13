@@ -5,6 +5,8 @@ import com.example.prodajem_kupujem.dto.advertisements.AdvertisementPatchDTO;
 import com.example.prodajem_kupujem.dto.advertisements.AdvertisementResponseDTO;
 import com.example.prodajem_kupujem.entities.Advertisement;
 import com.example.prodajem_kupujem.exceptions.AdvertisementNotFoundException;
+import com.example.prodajem_kupujem.exceptions.AdvertisementPromotionNotFoundException;
+import com.example.prodajem_kupujem.exceptions.UserNotEnoughCreditException;
 import com.example.prodajem_kupujem.exceptions.UserNotFoundException;
 import com.example.prodajem_kupujem.services.AdvertisementService;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +19,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
-import static com.example.prodajem_kupujem.config.Constants.*;
+import static com.example.prodajem_kupujem.config.Constants.ADVERTISEMENT_SORT_DATE_NEWEST;
+import static com.example.prodajem_kupujem.config.Constants.ADVERTISEMENT_SORT_PROMOTION;
 
 @RestController
 @RequestMapping("/advertisements")
@@ -28,16 +31,20 @@ public class AdvertisementController {
 
 
     @PostMapping("")
-    public ResponseEntity<?> addAdvertisement(@Valid @RequestBody AdvertisementAddDTO dto){
-        advertisementService.addAdvertisement(dto);
-        return new ResponseEntity<>("Advertisement successfully created", HttpStatus.CREATED);
+    public ResponseEntity<?> addAdvertisement(@Valid @RequestBody AdvertisementAddDTO dto,Authentication authentication) throws UserNotFoundException, UserNotEnoughCreditException, AdvertisementNotFoundException, AdvertisementPromotionNotFoundException {
+        return new ResponseEntity<>( advertisementService.addAdvertisement(dto,authentication.getName()), HttpStatus.CREATED);
     }
 
-    @GetMapping("/category/{category}")
-    public List<AdvertisementResponseDTO> getAllAdvertisementsFromCategory(@PathVariable String category) {
-        // stavi da vraca samo aktivne
-      return advertisementService.getAllAdvertisements(category);
+    @GetMapping("/category/{category}/search")
+    public List<AdvertisementResponseDTO> getAllAdvertisementsFromCategory(@PathVariable String category,
+                                                                           @RequestParam(value = "sort",required = false) String[] sort,
+                                                                           @RequestParam(value = "page",defaultValue = "1") int page) {
+       if(sort == null){
+           sort = new String[]{ADVERTISEMENT_SORT_PROMOTION, ADVERTISEMENT_SORT_DATE_NEWEST};
+       }
+       return advertisementService.sortAdvertisements(category,sort,page);
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getImageFromAd(@PathVariable int id){
@@ -79,16 +86,4 @@ public class AdvertisementController {
         return  new ResponseEntity<>(ads,HttpStatus.OK);
     }
 
-    @GetMapping(value = "/category/{category}/order")
-    public ResponseEntity<?> sortAdvertisementsFromCategory(@PathVariable String category, @RequestParam String sort){
-        switch (sort){
-            case ADVERTISEMENT_SORT_PRICE_DESCENDING :
-                return new ResponseEntity<>(advertisementService.sortAdvertisementsByPriceDesc(category),HttpStatus.OK);
-            case ADVERTISEMENT_SORT_PRICE_ASCENDING:
-                return new ResponseEntity<>(advertisementService.sortAdvertisementsByPriceAsc(category),HttpStatus.OK);
-            case ADVERTISEMENT_SORT_DATE_NEWEST:
-                return new ResponseEntity<>(advertisementService.sortAdvertisementsByNewest(category),HttpStatus.OK);
-        }
-        return new ResponseEntity<>("Bad request param",HttpStatus.BAD_REQUEST);
-    }
 }
