@@ -7,7 +7,7 @@ import lombok.*;
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
-
+@Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -42,5 +42,8 @@ public class AppUser {
     @ToString.Exclude
     @ManyToMany(fetch = FetchType.EAGER,mappedBy = "followers")
     private  Set<Advertisement> following = new HashSet<>();
+
+    @Column(columnDefinition="bit(1) default 0")
+    private Boolean enabled;
 
 }

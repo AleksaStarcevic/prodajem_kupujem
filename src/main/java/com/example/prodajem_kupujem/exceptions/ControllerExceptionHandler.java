@@ -35,4 +35,9 @@ public class ControllerExceptionHandler {
         return ResponseEntity.badRequest().body(exception.getMessage());
     }
 
+    @ExceptionHandler(InvalidValidationTokenException.class)
+    public ResponseEntity<String> handleInvalidValidationTokenException(InvalidValidationTokenException exception) {
+        return ResponseEntity.badRequest().body(exception.getMessage());
+    }
+
 }

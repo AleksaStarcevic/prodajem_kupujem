@@ -25,6 +25,12 @@ public class Constants {
     public static  final int ADVERTISEMENT_PROMOTION_STANDARD=1;
     public static  final int PAGE_SIZE=5;
 
+    public static  final int VALIDATION_TOKEN_EXPIRATION=2;
+
+    public static  final String EMAIL_SENDER="aleksastarcevic1@gmail.com";
+    public static  final String EMAIL_CONFIRMATION_TEMPLATE ="MailConfirmationTemplate.html";
+
+
 
 
 
