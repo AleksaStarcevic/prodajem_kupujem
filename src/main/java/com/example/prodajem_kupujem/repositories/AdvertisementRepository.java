@@ -67,4 +67,12 @@ public interface AdvertisementRepository extends JpaRepository<Advertisement,Int
             "where CURRENT_DATE > a.promotionExpiration")
     void updateAdvertisementsPromotions();
 
+    Page<Advertisement> findByAppUser_EmailAndAdvertisementStatus_StatusName(String name, String status, Pageable pageable);
+    Page<Advertisement> findByAppUser_IdAndAdvertisementCategory_Id(int userId,int categoryId,Pageable pageable);
+    Page<Advertisement> findByAppUser_Id(int userId,Pageable pageable);
+
+    Page<Advertisement> findAdvertisementsByFollowersEmail(String email,Pageable pageable);
+    Page<Advertisement> findAdvertisementsByAdvertisementCategory_IdAndFollowersEmail(Integer category,String email,Pageable pageable);
+
+
 }
