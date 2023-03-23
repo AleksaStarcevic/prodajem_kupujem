@@ -1,11 +1,9 @@
 package com.example.prodajem_kupujem.controllers;
 
+import com.example.prodajem_kupujem.dto.advertisements.AdvertisementRatingDTO;
 import com.example.prodajem_kupujem.dto.users.ActivatePromotionDTO;
 import com.example.prodajem_kupujem.dto.users.UserCreditDTO;
-import com.example.prodajem_kupujem.exceptions.AdvertisementNotFoundException;
-import com.example.prodajem_kupujem.exceptions.AdvertisementPromotionNotFoundException;
-import com.example.prodajem_kupujem.exceptions.UserNotEnoughCreditException;
-import com.example.prodajem_kupujem.exceptions.UserNotFoundException;
+import com.example.prodajem_kupujem.exceptions.*;
 import com.example.prodajem_kupujem.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -61,6 +59,29 @@ public class UserController {
 
         return new ResponseEntity<>(userService.getAdvertisementsThatIFollow(category,sort,page,authentication.getName()), HttpStatus.OK);
     }
+
+    @PostMapping("/user/{userId}/advertisements/{adId}/rating")
+    public ResponseEntity<?> rateUserForAdvertisement(@PathVariable(value = "userId") int userId,
+                                                      @PathVariable(value = "adId") int adId,
+                                                      @Valid @RequestBody AdvertisementRatingDTO advertisementRatingDTO,
+                                                      Authentication authentication) throws AdvertisementNotFoundException, UserNotFoundException, AdvertisementAlreadyRatedException {
+        return new ResponseEntity<>(userService.rateUserForAdvertisement(userId,adId,advertisementRatingDTO,authentication.getName()), HttpStatus.OK);
+    }
+
+    @GetMapping("/my_account/ratedAdvertisements")
+    public ResponseEntity<?> getMyRatedAdvertisements(@RequestParam(value = "rate",defaultValue = RATE_POSITIVE) String rate,Authentication authentication){
+        if(!AVAILABLE_RATES.contains(rate)) return new ResponseEntity<>("Bad rate parameter",HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(userService.getMyRatedAdvertisements(rate,authentication.getName()), HttpStatus.OK);
+    }
+
+    @GetMapping("/user/{userId}/ratedAdvertisements")
+    public ResponseEntity<?> getRatedAdvertisementsForUser(@PathVariable(value = "userId") int userId,
+                                                           @RequestParam(value = "rate",defaultValue = RATE_POSITIVE) String rate,Authentication authentication) throws UserNotFoundException {
+
+        if(!AVAILABLE_RATES.contains(rate)) return new ResponseEntity<>("Bad rate parameter",HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(userService.getRatedAdvertisementsForUser(userId,rate), HttpStatus.OK);
+    }
+
 
 
 

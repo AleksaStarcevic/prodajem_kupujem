@@ -1,6 +1,9 @@
 package com.example.prodajem_kupujem.services;
 
+import com.example.prodajem_kupujem.dto.advertisements.AdvertisementRatingDTO;
 import com.example.prodajem_kupujem.dto.advertisements.AdvertisementResponseDTO;
+import com.example.prodajem_kupujem.dto.advertisements.MyRatingsResponseDTO;
+import com.example.prodajem_kupujem.dto.advertisements.RatingReponseDTO;
 import com.example.prodajem_kupujem.dto.mappers.AdvertisementResponseMapper;
 import com.example.prodajem_kupujem.dto.mappers.UserResponseMapper;
 import com.example.prodajem_kupujem.dto.users.UserCreditDTO;
@@ -8,12 +11,11 @@ import com.example.prodajem_kupujem.dto.users.UserResponseDTO;
 import com.example.prodajem_kupujem.entities.Advertisement;
 import com.example.prodajem_kupujem.entities.AdvertisementPromotion;
 import com.example.prodajem_kupujem.entities.AppUser;
-import com.example.prodajem_kupujem.exceptions.AdvertisementNotFoundException;
-import com.example.prodajem_kupujem.exceptions.AdvertisementPromotionNotFoundException;
-import com.example.prodajem_kupujem.exceptions.UserNotEnoughCreditException;
-import com.example.prodajem_kupujem.exceptions.UserNotFoundException;
+import com.example.prodajem_kupujem.entities.Rating;
+import com.example.prodajem_kupujem.exceptions.*;
 import com.example.prodajem_kupujem.repositories.AdvertisementPromotionRepository;
 import com.example.prodajem_kupujem.repositories.AdvertisementRepository;
+import com.example.prodajem_kupujem.repositories.RatingRepository;
 import com.example.prodajem_kupujem.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -42,6 +44,8 @@ public class UserService {
     private final AdvertisementRepository advertisementRepository;
 
     private final AdvertisementResponseMapper advertisementResponseMapper;
+
+    private final RatingRepository ratingRepository;
 
     public UserResponseDTO payCredit(UserCreditDTO dto, String email) throws UserNotFoundException {
         Optional<AppUser> userOptional = userRepository.findByEmail(email);
@@ -120,5 +124,55 @@ public class UserService {
         }
         return advertisements.stream().map(advertisementResponseMapper::apply).collect(Collectors.toList());
 
+    }
+
+    public RatingReponseDTO rateUserForAdvertisement(int userId, int adId, AdvertisementRatingDTO advertisementRatingDTO,String userEmail) throws AdvertisementNotFoundException, UserNotFoundException, AdvertisementAlreadyRatedException {
+        AppUser appUser = userRepository.findByEmail(userEmail).orElseThrow(()-> new UserNotFoundException("User not found with given email"));
+        if(appUser.getId() == userId) throw new UserNotFoundException("Cannot rate your own advertisement");
+        Advertisement advertisement = advertisementRepository.findByIdAndAppUser_Id(adId,userId).orElseThrow(()-> new AdvertisementNotFoundException("There is no advertisement for this user"));
+        if(advertisement.getAdvertisementStatus().getStatusName().equals(ADVERTISEMENT_STATUS_EXPIRED)) throw new AdvertisementNotFoundException("Cannot rate expired advertisement");
+        Optional<Rating> ratingOptional = ratingRepository.findRatingByAdvertisement_IdAndAppUser_Id(adId,appUser.getId());
+        if(ratingOptional.isPresent()) throw new AdvertisementAlreadyRatedException("Advertisement is already rated by user");
+
+        Rating ratingToSave = Rating.builder()
+                .advertisement(advertisement)
+                .appUser(appUser)
+                .date(new Date())
+                .description(advertisementRatingDTO.getDescription())
+                .satisfied(advertisementRatingDTO.getSatisfied())
+                .build();
+
+      Rating rating = ratingRepository.save(ratingToSave);
+      AdvertisementResponseDTO advertisementResponseDTO = advertisementResponseMapper.apply(rating.getAdvertisement());
+      UserResponseDTO userResponseDTO = userResponseMapper.apply(rating.getAppUser());
+
+      return RatingReponseDTO.builder()
+              .advertisement(advertisementResponseDTO)
+              .userThatRatedAdvertisement(userResponseDTO)
+              .date(rating.getDate())
+              .description(rating.getDescription())
+              .satisfied(rating.isSatisfied())
+              .build();
+    }
+
+    public List<MyRatingsResponseDTO> getMyRatedAdvertisements(String rate, String userEmail) {
+        List<Rating> ratings;
+        if(rate.equals(RATE_POSITIVE)){
+            ratings = ratingRepository.findRatingByAdvertisement_AppUser_EmailAndSatisfiedIsTrue(userEmail);
+        }else{
+            ratings = ratingRepository.findRatingByAdvertisement_AppUser_EmailAndSatisfiedIsFalse(userEmail);
+        }
+        return ratings.stream().map(rating -> MyRatingsResponseDTO.builder()
+                                      .advertisementTitle(rating.getAdvertisement().getTitle())
+                                      .userName(rating.getAppUser().getName())
+                                      .date(rating.getDate())
+                                      .description(rating.getDescription())
+                                      .satisfied(rating.isSatisfied())
+                                      .build()).collect(Collectors.toList());
+    }
+
+    public List<MyRatingsResponseDTO> getRatedAdvertisementsForUser(int userId, String rate) throws UserNotFoundException {
+        AppUser appUser = userRepository.findById(userId).orElseThrow(()-> new UserNotFoundException("User not found with given id"));
+        return getMyRatedAdvertisements(rate,appUser.getEmail());
     }
 }

@@ -40,4 +40,11 @@ public class ControllerExceptionHandler {
         return ResponseEntity.badRequest().body(exception.getMessage());
     }
 
+    @ExceptionHandler(AdvertisementAlreadyRatedException.class)
+    public ResponseEntity<String> handleAdvertisementAlreadyRatedException(AdvertisementAlreadyRatedException exception) {
+        return ResponseEntity.badRequest().body(exception.getMessage());
+    }
+
+
+
 }
