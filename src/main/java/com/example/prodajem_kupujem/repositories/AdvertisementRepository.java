@@ -40,11 +40,9 @@ public interface AdvertisementRepository extends JpaRepository<Advertisement,Int
             "a.description = :description, " +
             "a.picture = :picture, " +
             "a.price = :price, " +
-            "a.advertisementCategory.id= :advertisementCategory, " +
-            "a.advertisementStatus.id = :advertisementStatus, " +
-            "a.advertisementPromotion.id = :advertisementPromotion " +
+            "a.advertisementCategory.id= :advertisementCategory " +
             "WHERE a.id = :id")
-    void patchAdvertisement(@Param("id")int id, @Param("title")String title,@Param("description") String description,@Param("picture") String picture,@Param("price") double price,@Param("advertisementCategory") int advertisementCategory, @Param("advertisementPromotion")int advertisementPromotion,@Param("advertisementStatus") int advertisementStatus);
+    void patchAdvertisement(@Param("id")int id, @Param("title")String title,@Param("description") String description,@Param("picture") byte[] picture,@Param("price") double price,@Param("advertisementCategory") int advertisementCategory);
     @Query("select a " +
             "from Advertisement a join AdvertisementCategory ac on a.advertisementCategory.id = ac.id " +
             "where ac.categoryName = :categoryName " +
@@ -73,6 +71,5 @@ public interface AdvertisementRepository extends JpaRepository<Advertisement,Int
 
     Page<Advertisement> findAdvertisementsByFollowersEmail(String email,Pageable pageable);
     Page<Advertisement> findAdvertisementsByAdvertisementCategory_IdAndFollowersEmail(Integer category,String email,Pageable pageable);
-
 
 }

@@ -5,6 +5,7 @@ import com.example.prodajem_kupujem.dto.users.ActivatePromotionDTO;
 import com.example.prodajem_kupujem.dto.users.UserCreditDTO;
 import com.example.prodajem_kupujem.exceptions.*;
 import com.example.prodajem_kupujem.services.UserService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,8 @@ import static com.example.prodajem_kupujem.config.Constants.*;
 
 @RequiredArgsConstructor
 @RestController
+@RequestMapping("api/v1")
+@SecurityRequirement(name = "prodajem_kupujem_api")
 public class UserController {
 
     private final UserService userService;

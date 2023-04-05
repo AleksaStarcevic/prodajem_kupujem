@@ -4,6 +4,7 @@ import com.example.prodajem_kupujem.dto.users.UserRegistrationDTO;
 import com.example.prodajem_kupujem.exceptions.InvalidValidationTokenException;
 import com.example.prodajem_kupujem.exceptions.UserNotFoundException;
 import com.example.prodajem_kupujem.services.AuthService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,8 @@ import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("api/v1")
+@SecurityRequirement(name = "prodajem_kupujem_api")
 public class AuthenticationController {
 
     private final AuthService authService;

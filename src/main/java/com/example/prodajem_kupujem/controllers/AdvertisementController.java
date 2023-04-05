@@ -3,12 +3,12 @@ package com.example.prodajem_kupujem.controllers;
 import com.example.prodajem_kupujem.dto.advertisements.AdvertisementAddDTO;
 import com.example.prodajem_kupujem.dto.advertisements.AdvertisementPatchDTO;
 import com.example.prodajem_kupujem.dto.advertisements.AdvertisementResponseDTO;
-import com.example.prodajem_kupujem.entities.Advertisement;
 import com.example.prodajem_kupujem.exceptions.AdvertisementNotFoundException;
 import com.example.prodajem_kupujem.exceptions.AdvertisementPromotionNotFoundException;
 import com.example.prodajem_kupujem.exceptions.UserNotEnoughCreditException;
 import com.example.prodajem_kupujem.exceptions.UserNotFoundException;
 import com.example.prodajem_kupujem.services.AdvertisementService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,8 +23,9 @@ import static com.example.prodajem_kupujem.config.Constants.ADVERTISEMENT_SORT_D
 import static com.example.prodajem_kupujem.config.Constants.ADVERTISEMENT_SORT_PROMOTION;
 
 @RestController
-@RequestMapping("/advertisements")
+@RequestMapping("api/v1/advertisements")
 @RequiredArgsConstructor
+@SecurityRequirement(name = "prodajem_kupujem_api")
 public class AdvertisementController {
 
     private final AdvertisementService advertisementService;
@@ -58,8 +59,14 @@ public class AdvertisementController {
     }
 
     @PatchMapping("/{id}")
-    public void patchAdvertisement(@PathVariable int id, @RequestBody @Valid AdvertisementPatchDTO dto) throws AdvertisementNotFoundException {
-        advertisementService.advertisementPatch(id,dto);
+    public ResponseEntity<?> patchAdvertisement(@PathVariable int id, @RequestBody @Valid AdvertisementPatchDTO dto) throws AdvertisementNotFoundException {
+        return new ResponseEntity<>( advertisementService.advertisementPatch(id,dto),HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteAdvertisement(@PathVariable int id) throws AdvertisementNotFoundException {
+        advertisementService.deleteAdvertisement(id);
+        return new ResponseEntity<>("Advertisement deleted successfully",HttpStatus.NO_CONTENT);
     }
 
     @PatchMapping("/{id}/follow")
@@ -79,7 +86,7 @@ public class AdvertisementController {
 
     @GetMapping("/search")
     public ResponseEntity<?> searchAdvertisements(@RequestParam String keywords){
-        List<Advertisement> ads = advertisementService.searchAdvertisements(keywords);
+        List<AdvertisementResponseDTO> ads = advertisementService.searchAdvertisements(keywords);
         if(ads.isEmpty()){
             return  new ResponseEntity<>("No advertisements found for search criteria",HttpStatus.OK);
         }
