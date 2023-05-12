@@ -4,7 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.Size;
 
 @Data
 @NoArgsConstructor
@@ -25,11 +28,6 @@ public class AdvertisementAddDTO {
     @Positive(message = "Price must have a positive value")
     @Min(value = 100,message = "Minimal price is 100")
     private double price;
-
-
-    @NotEmpty(message = "Email cannot be null or empty")
-    @Email(message = "Email should be valid")
-    private String userEmail;
 
     @Positive(message = "Category must have a positive value")
     private int advertisementCategory;

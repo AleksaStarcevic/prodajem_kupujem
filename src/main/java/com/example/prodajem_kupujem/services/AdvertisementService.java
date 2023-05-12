@@ -54,7 +54,7 @@ public class AdvertisementService {
                 .picture(pic)
                 .price(dto.getPrice())
                 .creationDate(new Date())
-                .appUser(userRepository.findByEmail(dto.getUserEmail()).get())
+                .appUser(userRepository.findByEmail(email).get())
                 .advertisementCategory(AdvertisementCategory.builder().id(dto.getAdvertisementCategory()).categoryName(category.getCategoryName()).build())
                 .advertisementStatus(AdvertisementStatus.builder().id(ADVERTISEMENT_STATUS_ACTIVE_).statusName(ADVERTISEMENT_STATUS_ACTIVE).build())
                 .advertisementPromotion(AdvertisementPromotion.builder().id(dto.getAdvertisementPromotion()).title(promotion.getTitle()).build())

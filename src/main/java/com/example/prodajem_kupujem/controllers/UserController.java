@@ -85,6 +85,11 @@ public class UserController {
         return new ResponseEntity<>(userService.getRatedAdvertisementsForUser(userId,rate), HttpStatus.OK);
     }
 
+    @GetMapping("/user/{userId}/likesNumber")
+    public ResponseEntity<?> getRatedAdvertisementsForUser(@PathVariable(value = "userId") int userId) throws UserNotFoundException {
+        return new ResponseEntity<>(userService.getNumberOfLikesAndDislikes(userId), HttpStatus.OK);
+    }
+
 
 
 

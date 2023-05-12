@@ -14,6 +14,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Builder
 public class AdvertisementResponseDTO {
+    private Integer id;
 
     private String title;
 

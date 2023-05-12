@@ -9,6 +9,8 @@ import java.util.Date;
 @Data
 public class MyRatingsResponseDTO {
 
+    Integer id;
+
     private String description;
 
     private Boolean satisfied;

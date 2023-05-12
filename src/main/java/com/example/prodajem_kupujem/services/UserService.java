@@ -1,9 +1,6 @@
 package com.example.prodajem_kupujem.services;
 
-import com.example.prodajem_kupujem.dto.advertisements.AdvertisementRatingDTO;
-import com.example.prodajem_kupujem.dto.advertisements.AdvertisementResponseDTO;
-import com.example.prodajem_kupujem.dto.advertisements.MyRatingsResponseDTO;
-import com.example.prodajem_kupujem.dto.advertisements.RatingReponseDTO;
+import com.example.prodajem_kupujem.dto.advertisements.*;
 import com.example.prodajem_kupujem.dto.mappers.AdvertisementResponseMapper;
 import com.example.prodajem_kupujem.dto.mappers.UserResponseMapper;
 import com.example.prodajem_kupujem.dto.users.UserCreditDTO;
@@ -163,6 +160,7 @@ public class UserService {
             ratings = ratingRepository.findRatingByAdvertisement_AppUser_EmailAndSatisfiedIsFalse(userEmail);
         }
         return ratings.stream().map(rating -> MyRatingsResponseDTO.builder()
+                                        .id(rating.getId())
                                       .advertisementTitle(rating.getAdvertisement().getTitle())
                                       .userName(rating.getAppUser().getName())
                                       .date(rating.getDate())
@@ -174,5 +172,16 @@ public class UserService {
     public List<MyRatingsResponseDTO> getRatedAdvertisementsForUser(int userId, String rate) throws UserNotFoundException {
         AppUser appUser = userRepository.findById(userId).orElseThrow(()-> new UserNotFoundException("User not found with given id"));
         return getMyRatedAdvertisements(rate,appUser.getEmail());
+    }
+
+    public AdvertisementNumberOfLikesResponseDTO getNumberOfLikesAndDislikes(int userId) throws UserNotFoundException {
+        AppUser appUser = userRepository.findById(userId).orElseThrow(()-> new UserNotFoundException("User not found with given id"));
+        Integer numOfDislikes = ratingRepository.countRatingByAdvertisement_AppUser_EmailAndSatisfiedIsFalse(appUser.getEmail());
+        Integer numOfLikes = ratingRepository.countRatingByAdvertisement_AppUser_EmailAndSatisfiedIsTrue(appUser.getEmail());
+
+        return AdvertisementNumberOfLikesResponseDTO.builder()
+                .dislikes(numOfDislikes)
+                .likes(numOfLikes)
+                .build();
     }
 }

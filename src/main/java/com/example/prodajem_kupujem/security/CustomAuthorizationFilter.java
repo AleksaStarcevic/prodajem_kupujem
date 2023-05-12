@@ -28,7 +28,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        List<String> routesAllowed= List.of("/login","/api/v1/refreshToken","/api/v1/register","/api-docs/**","/swagger-ui/**");
+        List<String> routesAllowed= List.of("/api/v1/advertisements/test","/login","/api/v1/refreshToken","/api/v1/register","/api-docs/**","/swagger-ui/**");
         if(!routesAllowed.contains(request.getServletPath())) {
             String authorizationHeader = request.getHeader(AUTHORIZATION);
             if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {

@@ -11,4 +11,6 @@ public interface RatingRepository extends JpaRepository<Rating,Integer> {
 
     List<Rating> findRatingByAdvertisement_AppUser_EmailAndSatisfiedIsTrue(String email);
     List<Rating> findRatingByAdvertisement_AppUser_EmailAndSatisfiedIsFalse(String email);
+    Integer countRatingByAdvertisement_AppUser_EmailAndSatisfiedIsFalse(String email);
+    Integer countRatingByAdvertisement_AppUser_EmailAndSatisfiedIsTrue(String email);
 }

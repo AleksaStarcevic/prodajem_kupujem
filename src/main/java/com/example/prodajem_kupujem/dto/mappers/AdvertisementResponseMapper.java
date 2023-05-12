@@ -12,12 +12,14 @@ public class AdvertisementResponseMapper implements Function<Advertisement, Adve
     @Override
     public AdvertisementResponseDTO apply(Advertisement ad) {
       return AdvertisementResponseDTO.builder()
+                .id(ad.getId())
                 .title(ad.getTitle())
                 .description(ad.getDescription())
                 .picture(ad.getPicture())
                 .price(ad.getPrice())
                 .creationDate(ad.getCreationDate())
                 .user(UserResponseDTO.builder()
+                        .id(ad.getAppUser().getId())
                         .email(ad.getAppUser().getEmail())
                         .name(ad.getAppUser().getName())
                         .city(ad.getAppUser().getCity())
