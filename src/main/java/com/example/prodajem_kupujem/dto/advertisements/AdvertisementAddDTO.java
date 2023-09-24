@@ -26,7 +26,7 @@ public class AdvertisementAddDTO {
     private String picture;
 
     @Positive(message = "Price must have a positive value")
-    @Min(value = 100,message = "Minimal price is 100")
+    @Min(value = 1,message = "Minimal price is 1")
     private double price;
 
     @Positive(message = "Category must have a positive value")

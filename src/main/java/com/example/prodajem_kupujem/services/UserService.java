@@ -3,6 +3,7 @@ package com.example.prodajem_kupujem.services;
 import com.example.prodajem_kupujem.dto.advertisements.*;
 import com.example.prodajem_kupujem.dto.mappers.AdvertisementResponseMapper;
 import com.example.prodajem_kupujem.dto.mappers.UserResponseMapper;
+import com.example.prodajem_kupujem.dto.users.EditAccountDto;
 import com.example.prodajem_kupujem.dto.users.UserCreditDTO;
 import com.example.prodajem_kupujem.dto.users.UserResponseDTO;
 import com.example.prodajem_kupujem.entities.Advertisement;
@@ -183,5 +184,35 @@ public class UserService {
                 .dislikes(numOfDislikes)
                 .likes(numOfLikes)
                 .build();
+    }
+
+    public AdvertisementNumberOfLikesResponseDTO getMyNumberOfLikesAndDislikes(String username) throws UserNotFoundException {
+        AppUser appUser = userRepository.findByEmail(username).orElseThrow(()-> new UserNotFoundException("User not found with given email"));
+        Integer numOfDislikes = ratingRepository.countRatingByAdvertisement_AppUser_EmailAndSatisfiedIsFalse(appUser.getEmail());
+        Integer numOfLikes = ratingRepository.countRatingByAdvertisement_AppUser_EmailAndSatisfiedIsTrue(appUser.getEmail());
+
+        return AdvertisementNumberOfLikesResponseDTO.builder()
+                .dislikes(numOfDislikes)
+                .likes(numOfLikes)
+                .build();
+    }
+
+    public UserResponseDTO editMyAccount(String name, EditAccountDto editAccountDto) throws UserNotFoundException {
+        AppUser appUser = userRepository.findByEmail(name).orElseThrow(()-> new UserNotFoundException("User not found with given email"));
+        String dtoName = editAccountDto.getName();
+        String dtoCity = editAccountDto.getCity();
+        String dtoPhone = editAccountDto.getPhone();
+
+        if(dtoName != null) appUser.setName(dtoName);
+        if(dtoCity != null) appUser.setCity(dtoCity);
+        if(dtoPhone != null) appUser.setPhone(dtoPhone);
+        AppUser savedUser = userRepository.save(appUser);
+        return new UserResponseDTO(savedUser.getName(),savedUser.getCity(),savedUser.getPhone());
+
+    }
+
+    public UserResponseDTO getMyInformation(String name) throws UserNotFoundException {
+        AppUser appUser = userRepository.findByEmail(name).orElseThrow(()-> new UserNotFoundException("User not found with given email"));
+        return new UserResponseDTO(appUser.getId(),appUser.getName(),appUser.getPhone(),appUser.getEmail(),appUser.getCity(),appUser.getCredit());
     }
 }

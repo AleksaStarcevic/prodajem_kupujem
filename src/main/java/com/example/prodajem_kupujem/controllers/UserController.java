@@ -2,7 +2,9 @@ package com.example.prodajem_kupujem.controllers;
 
 import com.example.prodajem_kupujem.dto.advertisements.AdvertisementRatingDTO;
 import com.example.prodajem_kupujem.dto.users.ActivatePromotionDTO;
+import com.example.prodajem_kupujem.dto.users.EditAccountDto;
 import com.example.prodajem_kupujem.dto.users.UserCreditDTO;
+import com.example.prodajem_kupujem.dto.users.UserResponseDTO;
 import com.example.prodajem_kupujem.exceptions.*;
 import com.example.prodajem_kupujem.services.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -89,6 +91,23 @@ public class UserController {
     public ResponseEntity<?> getRatedAdvertisementsForUser(@PathVariable(value = "userId") int userId) throws UserNotFoundException {
         return new ResponseEntity<>(userService.getNumberOfLikesAndDislikes(userId), HttpStatus.OK);
     }
+
+    @GetMapping("/my_account/ratedAdvertisements/likesNumber")
+    public ResponseEntity<?> getRatedAdvertisementsForUser(Authentication authentication) throws UserNotFoundException {
+        return new ResponseEntity<>(userService.getMyNumberOfLikesAndDislikes(authentication.getName()), HttpStatus.OK);
+    }
+
+    @PatchMapping("/my_account")
+    public ResponseEntity<UserResponseDTO> editMyAccount(Authentication authentication, @RequestBody EditAccountDto editAccountDto) throws UserNotFoundException {
+        return new ResponseEntity<>(userService.editMyAccount(authentication.getName(),editAccountDto), HttpStatus.OK);
+    }
+
+    @GetMapping("/my_account")
+    public ResponseEntity<UserResponseDTO> getMyInformation(Authentication authentication) throws UserNotFoundException {
+        return new ResponseEntity<>(userService.getMyInformation(authentication.getName()), HttpStatus.OK);
+    }
+
+
 
 
 
